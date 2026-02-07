@@ -241,3 +241,19 @@ body {
 .paper-container.returning {
     transition: transform 0.25s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
+
+/* IBM Logo at bottom of typewriter */
+.ibm-logo {
+    position: fixed;
+    top: 62%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    pointer-events: none;
+}
+
+.ibm-logo img {
+    width: 2700px;
+    height: auto;
+    display: block;
+}

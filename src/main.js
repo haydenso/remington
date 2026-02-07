@@ -67,7 +67,7 @@ function updatePaperPosition() {
     lineNum.textContent = pos.line + 1;
     
     // Show warning when near margin
-    if (pos.col >= CONFIG.maxCharsPerLine - 5) {
+    if (pos.col >= CONFIG.maxCharsPerLine - 3) {
         marginWarning.classList.add('show');
     } else {
         marginWarning.classList.remove('show');
