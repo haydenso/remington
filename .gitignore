@@ -1,0 +1,65 @@
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Node
+node_modules/
+dist/
+build/
+.out/
+.cache/
+.next/
+.nuxt/
+.parcel-cache/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+venv/
+.venv/
+
+# Java
+target/
+*.class
+
+# Ruby
+/vendor/bundle
+*.gem
+
+# Go
+/bin/
+*.exe
+
+# IDEs / editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+
+# Environment files
+.env
+.env.*.local
+.envrc
+
+# Misc
+coverage/
+tmp/
+temp/
+*.tmp
+*.bak
+*.orig
+*.rej
