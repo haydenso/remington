@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monotype - Fixed Cursor Typewriter</title>
+</head>
+<body>
+    <!-- Fixed cursor -->
+    <div class="cursor" id="cursor"></div>
+    
+    <!-- Margin warning bell -->
+    <div class="margin-warning" id="marginWarning">🔔</div>
+    
+    <!-- Line counter -->
+    <div class="line-indicator">Line <span id="lineNum">1</span></div>
+    
+    <!-- Instructions -->
+    <div class="instructions">
+        Start typing... | Press Enter/Return for new line | Backspace to delete
+    </div>
+
+    <!-- Paper container -->
+    <div class="paper-container" id="paperContainer">
+        <div class="paper">
+            <textarea class="text-input" id="textInput" spellcheck="false"></textarea>
+        </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    height: 100vh;
+    background: linear-gradient(180deg, #E8D5C4 0%, #D4B8A5 100%);
+    overflow: hidden;
+    font-family: 'Courier Prime', 'Courier New', monospace;
+}
+
+/* Fixed cursor - lowered by 5 lines (125px) to align with text */
+.cursor {
+    position: fixed;
+    top: calc(50% + 220px);
+    left: 50%;
+    width: 2px;
+    height: 22px;
+    background: #FF6B35;
+    animation: blink 1.06s infinite;
+    pointer-events: none;
+    z-index: 1000;
+    box-shadow: 0 0 4px rgba(255, 107, 53, 0.4);
+    margin-top: -11px;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+/* Paper Container */
+.paper-container {
+    position: fixed;
+    left: calc(50% - 96px);
+    top: calc(50% + 125px - 11px);
+    transform: translate(0, 0);
+    transition: transform 0.08s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: transform;
+    z-index: 1;
+}
+
+/* The actual paper sheet */
+.paper {
+    width: 800px;
+    height: 1000px;
+    background: #FEFEFE;
+    box-shadow: 
+        0 4px 6px rgba(0,0,0,0.05),
+        0 10px 40px rgba(0,0,0,0.1),
+        inset 0 0 80px rgba(0,0,0,0.02);
+    position: relative;
+    overflow: visible;
+}
+
+/* Paper texture overlay */
+.paper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 24px,
+            rgba(0,0,0,0.03) 24px,
+            rgba(0,0,0,0.03) 25px
+        );
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Input textarea */
+.text-input {
+    position: absolute;
+    top: 96px;
+    left: 96px;
+    width: calc(100% - 192px);
+    height: calc(100% - 192px);
+    font-family: 'Courier Prime', 'Courier New', monospace;
+    font-size: 18px;
+    line-height: 25px;
+    color: #2a2a2a;
+    background: transparent;
+    border: none;
+    outline: none;
+    resize: none;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    white-space: pre;
+    word-wrap: normal;
+    overflow-wrap: normal;
+    z-index: 10;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    caret-color: transparent;
+}
+
+.text-input::-webkit-scrollbar {
+    display: none;
+}
+
+.text-input::selection {
+    background: rgba(255, 107, 53, 0.3);
+}
+
+/* Margin warning indicator */
+.margin-warning {
+    position: fixed;
+    top: calc(50% + 125px);
+    left: calc(50% + 320px);
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 107, 53, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    margin-top: -20px;
+    z-index: 200;
+}
+
+.margin-warning.show {
+    opacity: 1;
+    animation: pulse 0.5s ease;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: translateY(-50%) scale(1); }
+    50% { transform: translateY(-50%) scale(1.1); }
+}
+
+/* Line indicator */
+.line-indicator {
+    position: fixed;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #5C4A3A;
+    font-size: 12px;
+    opacity: 0.5;
+}
+
+/* Instructions */
+.instructions {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #5C4A3A;
+    font-size: 14px;
+    opacity: 0.6;
+    text-align: center;
+}
+
+/* Carriage return animation */
+.paper-container.returning {
+    transition: transform 0.25s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
