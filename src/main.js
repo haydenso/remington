@@ -4,7 +4,31 @@ import './style.css'
 const FONT_CONFIG = {
     size: 18,
     lineHeight: 25,
-    family: 'Courier Prime, Courier New, monospace'
+    family: 'Courier Prime, Courier New, monospace',
+    key: 'courier' // Current font key
+};
+
+// Hardcoded character widths for each font at different sizes
+// These are measured values to ensure pixel-perfect cursor alignment
+const FONT_CHAR_WIDTHS = {
+    'courier': {
+        11: 6.6,
+        14: 8.4,
+        18: 10.8,
+        22: 13.2
+    },
+    'special-elite': {
+        11: 6.05,
+        14: 7.7,
+        18: 10.1,
+        22: 12.1
+    },
+    'ibm-plex': {
+        11: 6.6,
+        14: 8.4,
+        18: 10.8,
+        22: 13.2
+    }
 };
 
 // Configuration
@@ -60,23 +84,48 @@ const ibmLogo = document.querySelector('.ibm-logo');
 const screenSizeElement = document.getElementById('screenSize');
 const marginAlertToggle = document.getElementById('marginAlertToggle');
 
-// Measure actual character width
+// Measure actual character width (now uses hardcoded values for consistency)
 function measureCharWidth() {
+    // Use hardcoded values for pixel-perfect alignment
+    const fontKey = FONT_CONFIG.key || 'courier';
+    const fontSize = FONT_CONFIG.size;
+    
+    // Get hardcoded width for this font/size combination
+    if (FONT_CHAR_WIDTHS[fontKey] && FONT_CHAR_WIDTHS[fontKey][fontSize]) {
+        const width = FONT_CHAR_WIDTHS[fontKey][fontSize];
+        console.log('Using hardcoded char width:', {
+            font: fontKey,
+            size: fontSize,
+            width: width
+        });
+        return width;
+    }
+    
+    // Fallback to dynamic measurement if not in table
+    console.warn('No hardcoded width found, measuring dynamically');
     const span = document.createElement('span');
     span.style.fontFamily = FONT_CONFIG.family;
     span.style.fontSize = FONT_CONFIG.size + 'px';
     span.style.visibility = 'hidden';
     span.style.position = 'absolute';
+    span.style.whiteSpace = 'pre';
     span.textContent = 'X';
     document.body.appendChild(span);
     const width = span.getBoundingClientRect().width;
     document.body.removeChild(span);
+    
+    console.log('Measured char width:', {
+        font: FONT_CONFIG.family,
+        size: FONT_CONFIG.size,
+        width: width
+    });
+    
     return width;
 }
 
 // Recalculate all font-dependent configuration
 function recalculateConfig() {
-    // Measure character width based on current font size
+    // Measure character width based on current font size and family
     CONFIG.charWidth = measureCharWidth();
     
     // Update line height (proportional to font size, typically 1.4x)
@@ -90,6 +139,8 @@ function recalculateConfig() {
     CONFIG.maxCharsPerLine = Math.floor(availableWidth / CONFIG.charWidth) - 1;
     
     console.log('Font config updated:', {
+        fontKey: FONT_CONFIG.key,
+        fontFamily: FONT_CONFIG.family,
         fontSize: FONT_CONFIG.size,
         charWidth: CONFIG.charWidth,
         lineHeight: CONFIG.lineHeight,
@@ -310,23 +361,38 @@ function updateFontSize(newSize) {
 }
 
 // Update font family
-function updateFontFamily(fontKey) {
+async function updateFontFamily(fontKey) {
     const fontMap = {
         'courier': 'Courier Prime, Courier New, monospace',
         'special-elite': 'Special Elite, monospace',
-        'spectral': 'Spectral, serif'
+        'ibm-plex': 'IBM Plex Mono, monospace'
     };
     
+    // Update font key FIRST (critical for measureCharWidth to use correct hardcoded values)
+    FONT_CONFIG.key = fontKey;
     FONT_CONFIG.family = fontMap[fontKey] || fontMap['courier'];
     
     // Update CSS for textarea
     textInput.style.fontFamily = FONT_CONFIG.family;
     
-    // Recalculate character width since different fonts have different widths
-    recalculateConfig();
+    // Wait for font to load before measuring (critical for accurate character width)
+    try {
+        // Extract just the font name for loading check
+        const fontName = FONT_CONFIG.family.split(',')[0].replace(/['"]/g, '').trim();
+        await document.fonts.load(`${FONT_CONFIG.size}px "${fontName}"`);
+        console.log('Font loaded:', fontName);
+    } catch (error) {
+        console.warn('Font loading check failed, continuing anyway:', error);
+    }
     
-    // Update paper position to maintain alignment
-    updatePaperPosition();
+    // Small delay to ensure rendering is complete
+    setTimeout(() => {
+        // Recalculate character width since different fonts have different widths
+        recalculateConfig();
+        
+        // Update paper position to maintain alignment
+        updatePaperPosition();
+    }, 50);
 }
 
 // Initialize configuration on startup
@@ -355,6 +421,16 @@ function updatePaperPosition() {
     
     const xOffset = pos.col * CONFIG.charWidth;
     const yOffset = pos.line * CONFIG.lineHeight;
+    
+    // Debug logging (can be removed later)
+    if (pos.col > 0 && pos.col % 5 === 0) { // Log every 5 characters
+        console.log('Paper position:', {
+            col: pos.col,
+            charWidth: CONFIG.charWidth,
+            xOffset: xOffset,
+            font: FONT_CONFIG.family
+        });
+    }
     
     paperContainer.style.transform = `translate(${-xOffset}px, ${-yOffset}px)`;
     
