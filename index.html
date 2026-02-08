@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>your typewriter!</title>
     <link rel="icon" type="image/png" href="/icon.PNG">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Spectral:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
     <script>
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     </script>
@@ -76,6 +79,22 @@
             <div class="settings-section">
                 <div class="section-title">Typography</div>
                 <div class="settings-row">
+                    <!-- Font Family Selector -->
+                    <div class="setting-group">
+                        <span class="setting-label">Font Family</span>
+                        <div class="font-family-options">
+                            <div class="font-family-preview active" data-font="courier" title="Courier Prime">
+                                <div class="font-family-circle" style="font-family: 'Courier Prime', monospace;">Aa</div>
+                            </div>
+                            <div class="font-family-preview" data-font="special-elite" title="Special Elite">
+                                <div class="font-family-circle" style="font-family: 'Special Elite', monospace;">Aa</div>
+                            </div>
+                            <div class="font-family-preview" data-font="spectral" title="Spectral">
+                                <div class="font-family-circle" style="font-family: 'Spectral', serif;">Aa</div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <!-- Font Size Selector -->
                     <div class="setting-group">
                         <span class="setting-label">Font Size</span>
@@ -118,7 +137,7 @@
                     <div class="setting-group">
                         <span class="setting-label">Background</span>
                         <div class="color-options">
-                            <div class="color-preview active" data-color="#2387A8" title="Blue">
+                            <div class="color-preview" data-color="#2387A8" title="Blue">
                                 <div class="color-circle" style="background-color: #2387A8;"></div>
                             </div>
                             <div class="color-preview" data-color="#5C4A3A" title="Brown">
@@ -133,7 +152,7 @@
                             <div class="color-preview" data-color="#4A4A5C" title="Navy">
                                 <div class="color-circle" style="background-color: #4A4A5C;"></div>
                             </div>
-                            <div class="color-preview" data-color="#3A3A3A" title="Dark Gray">
+                            <div class="color-preview active" data-color="#3A3A3A" title="Dark Gray">
                                 <div class="color-circle" style="background-color: #3A3A3A;"></div>
                             </div>
                         </div>

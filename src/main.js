@@ -3,7 +3,8 @@ import './style.css'
 // Font configuration - single source of truth
 const FONT_CONFIG = {
     size: 18,
-    lineHeight: 25
+    lineHeight: 25,
+    family: 'Courier Prime, Courier New, monospace'
 };
 
 // Configuration
@@ -36,6 +37,7 @@ const toggleLabel = document.getElementById('toggleLabel');
 const downloadBtn = document.getElementById('downloadBtn');
 const copyBtn = document.getElementById('copyBtn');
 const paperPreviews = document.querySelectorAll('.paper-preview');
+const fontFamilyPreviews = document.querySelectorAll('.font-family-preview');
 const fontSizePreviews = document.querySelectorAll('.font-size-preview');
 const marginPreviews = document.querySelectorAll('.margin-preview');
 const bgColorPreviews = document.querySelectorAll('.color-preview');
@@ -61,7 +63,7 @@ const marginAlertToggle = document.getElementById('marginAlertToggle');
 // Measure actual character width
 function measureCharWidth() {
     const span = document.createElement('span');
-    span.style.fontFamily = 'Courier Prime, Courier New, monospace';
+    span.style.fontFamily = FONT_CONFIG.family;
     span.style.fontSize = FONT_CONFIG.size + 'px';
     span.style.visibility = 'hidden';
     span.style.position = 'absolute';
@@ -307,6 +309,26 @@ function updateFontSize(newSize) {
     updatePaperPosition();
 }
 
+// Update font family
+function updateFontFamily(fontKey) {
+    const fontMap = {
+        'courier': 'Courier Prime, Courier New, monospace',
+        'special-elite': 'Special Elite, monospace',
+        'spectral': 'Spectral, serif'
+    };
+    
+    FONT_CONFIG.family = fontMap[fontKey] || fontMap['courier'];
+    
+    // Update CSS for textarea
+    textInput.style.fontFamily = FONT_CONFIG.family;
+    
+    // Recalculate character width since different fonts have different widths
+    recalculateConfig();
+    
+    // Update paper position to maintain alignment
+    updatePaperPosition();
+}
+
 // Initialize configuration on startup
 recalculateConfig();
 updateCursorHeight();
@@ -509,6 +531,18 @@ typewriterModeCheckbox.addEventListener('change', (e) => {
     updateTypewriterMode(e.target.checked);
 });
 
+// Font family selector - circular buttons
+fontFamilyPreviews.forEach(preview => {
+    preview.addEventListener('click', () => {
+        const font = preview.dataset.font;
+        updateFontFamily(font);
+        
+        // Update active state
+        fontFamilyPreviews.forEach(p => p.classList.remove('active'));
+        preview.classList.add('active');
+    });
+});
+
 // Font size selector - circular buttons
 fontSizePreviews.forEach(preview => {
     preview.addEventListener('click', () => {
@@ -646,6 +680,8 @@ settingsHeader.addEventListener('click', (e) => {
     // Toggle button text
     if (settingsContent.classList.contains('collapsed')) {
         minimizeBtn.textContent = '+';
+        // Auto-focus textarea when settings are closed
+        setTimeout(() => textInput.focus(), 100);
     } else {
         minimizeBtn.textContent = '−';
     }
@@ -660,6 +696,8 @@ minimizeBtn.addEventListener('click', (e) => {
     // Toggle button text
     if (settingsContent.classList.contains('collapsed')) {
         minimizeBtn.textContent = '+';
+        // Auto-focus textarea when settings are closed
+        setTimeout(() => textInput.focus(), 100);
     } else {
         minimizeBtn.textContent = '−';
     }
