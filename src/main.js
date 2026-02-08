@@ -13,13 +13,15 @@ const CONFIG = {
     maxCharsPerLine: 55,
     leftMargin: 96,
     topMargin: 96,
-    paperWidth: 800
+    paperWidth: 800,
+    basePaperWidth: 800  // Original paper width for reference
 };
 
 // State
 const STATE = {
     typewriterMode: false,
-    lastLineNumber: 0
+    lastLineNumber: 0,
+    ibmImageVisible: true
 };
 
 // Elements
@@ -49,6 +51,9 @@ const customCursorColorBtn = document.getElementById('customCursorColorBtn');
 const customCursorColorInput = document.getElementById('customCursorColorInput');
 const cursorColorHexInput = document.getElementById('cursorColorHexInput');
 const applyCursorColor = document.getElementById('applyCursorColor');
+const ibmToggleCheckbox = document.getElementById('ibmToggleCheckbox');
+const ibmLogo = document.querySelector('.ibm-logo');
+const screenSizeElement = document.getElementById('screenSize');
 
 // Measure actual character width
 function measureCharWidth() {
@@ -72,6 +77,9 @@ function recalculateConfig() {
     // Update line height (proportional to font size, typically 1.4x)
     CONFIG.lineHeight = FONT_CONFIG.lineHeight;
     
+    // Get current paper width (responsive)
+    updatePaperWidth();
+    
     // Calculate max characters per line based on available paper width
     const availableWidth = CONFIG.paperWidth - (CONFIG.leftMargin * 2);
     CONFIG.maxCharsPerLine = Math.floor(availableWidth / CONFIG.charWidth) - 1;
@@ -80,6 +88,7 @@ function recalculateConfig() {
         fontSize: FONT_CONFIG.size,
         charWidth: CONFIG.charWidth,
         lineHeight: CONFIG.lineHeight,
+        paperWidth: CONFIG.paperWidth,
         maxCharsPerLine: CONFIG.maxCharsPerLine,
         margins: CONFIG.leftMargin
     });
@@ -184,6 +193,55 @@ function updateCursorHeight() {
     const baseSize = 18;
     const offsetAdjustment = (FONT_CONFIG.size - baseSize) * 0.5;
     document.documentElement.style.setProperty('--cursor-offset', offsetAdjustment + 'px');
+}
+
+// Update paper width based on screen size
+function updatePaperWidth() {
+    const screenWidth = window.innerWidth;
+    
+    // Responsive paper width calculation
+    if (screenWidth <= 480) {
+        // Mobile: full width
+        CONFIG.paperWidth = screenWidth;
+    } else if (screenWidth <= 768) {
+        // Tablet: 95% width, max 600px
+        CONFIG.paperWidth = Math.min(screenWidth * 0.95, 600);
+    } else if (screenWidth <= 1024) {
+        // Small desktop: 90% width, max 800px
+        CONFIG.paperWidth = Math.min(screenWidth * 0.9, 800);
+    } else {
+        // Large desktop: fixed 800px
+        CONFIG.paperWidth = CONFIG.basePaperWidth;
+    }
+}
+
+// Detect and display screen size
+function updateScreenSize() {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    
+    let deviceType = '';
+    if (width <= 480) {
+        deviceType = 'Mobile';
+    } else if (width <= 768) {
+        deviceType = 'Tablet';
+    } else if (width <= 1024) {
+        deviceType = 'Small Desktop';
+    } else {
+        deviceType = 'Desktop';
+    }
+    
+    screenSizeElement.textContent = `${width}×${height}px (${deviceType})`;
+}
+
+// Toggle IBM image visibility
+function toggleIBMImage(visible) {
+    STATE.ibmImageVisible = visible;
+    if (visible) {
+        ibmLogo.classList.remove('hidden');
+    } else {
+        ibmLogo.classList.add('hidden');
+    }
 }
 
 // Download text as TXT file
@@ -601,10 +659,16 @@ paperPreviews.forEach(preview => {
     });
 });
 
+// IBM image toggle
+ibmToggleCheckbox.addEventListener('change', (e) => {
+    toggleIBMImage(e.target.checked);
+});
+
 // Focus on load
 window.addEventListener('load', () => {
     textInput.focus();
     updatePaperPosition();
+    updateScreenSize();
 });
 
 // Keep focus
@@ -616,7 +680,10 @@ document.addEventListener('click', (e) => {
 
 // Handle resize
 window.addEventListener('resize', () => {
+    updatePaperWidth();
+    recalculateConfig();
     updatePaperPosition();
+    updateScreenSize();
 });
 
 // Initial position

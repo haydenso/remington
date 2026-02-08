@@ -434,6 +434,18 @@ body {
     line-height: 1.5;
 }
 
+.screen-size-info {
+    font-size: 9px;
+    color: #666;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+#screenSize {
+    color: #FF6B35;
+    font-family: 'Courier Prime', monospace;
+}
+
 .export-buttons {
     display: flex;
     gap: 6px;
@@ -517,20 +529,26 @@ body {
     transition: transform 0.25s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-/* IBM Logo at bottom of typewriter */
+/* IBM Logo at bottom of typewriter - responsive positioning */
 .ibm-logo {
     position: fixed;
-    top: 180px;
-    left: 48.8vw;
-    transform: translateX(-50%);
+    bottom: -2%;
+    left: 11.5%;
     z-index: 100;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.ibm-logo.hidden {
+    opacity: 0;
     pointer-events: none;
 }
 
 .ibm-logo img {
-    width: 100vw;
+    width: 75vw;
     height: auto;
     display: block;
+    max-width: 100%;
 }
 
 /* Paper Selector Styles */
@@ -574,4 +592,68 @@ body {
             rgba(0,0,0,0.08) 3px,
             rgba(0,0,0,0.08) 4px
         );
+}
+
+/* Responsive Design - Mobile & Tablet */
+@media (max-width: 1024px) {
+    .paper {
+        width: 90vw;
+        max-width: 800px;
+    }
+    
+    .paper-container {
+        left: calc(50% - var(--margin) * 0.9);
+    }
+    
+    .ibm-logo img {
+        width: 100vw;
+    }
+}
+
+@media (max-width: 768px) {
+    .paper {
+        width: 95vw;
+        max-width: 600px;
+    }
+    
+    .settings-menu {
+        max-width: 98vw;
+    }
+    
+    .settings-row {
+        gap: 15px;
+        padding: 10px 15px;
+    }
+    
+    .cursor {
+        top: calc(50% + 180px + var(--cursor-offset));
+    }
+    
+    .paper-container {
+        top: calc(50% + 100px - 11px - var(--margin) + 96px);
+    }
+}
+
+@media (max-width: 480px) {
+    .paper {
+        width: 100vw;
+        max-width: 100%;
+    }
+    
+    .settings-row {
+        gap: 10px;
+        padding: 8px 12px;
+    }
+    
+    .cursor {
+        top: calc(50% + 150px + var(--cursor-offset));
+    }
+    
+    .paper-container {
+        top: calc(50% + 80px - 11px - var(--margin) + 96px);
+    }
+    
+    .margin-warning {
+        left: calc(50% + 45vw);
+    }
 }

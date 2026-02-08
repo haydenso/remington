@@ -41,6 +41,18 @@
                     </div>
                 </div>
                 
+                <!-- IBM Image Toggle -->
+                <div class="setting-group">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="ibmToggleCheckbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <div class="toggle-label-group">
+                        <span class="toggle-label">show/hide image</span>
+                        <span class="toggle-description">typewriter</span>
+                    </div>
+                </div>
+                
                 <!-- Font Size Selector -->
                 <div class="setting-group">
                     <span class="setting-label">Font Size</span>
@@ -175,6 +187,7 @@
             
             <!-- Instructions -->
             <div class="instructions-panel">
+                <div class="screen-size-info" id="screenSizeInfo">Detected screen: <span id="screenSize">Loading...</span></div>
                 Start typing... | Press Enter/Return for new line | Backspace to delete
             </div>
         </div>
