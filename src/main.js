@@ -21,7 +21,8 @@ const CONFIG = {
 const STATE = {
     typewriterMode: false,
     lastLineNumber: 0,
-    ibmImageVisible: true
+    ibmImageVisible: true,
+    marginAlertEnabled: true
 };
 
 // Elements
@@ -55,6 +56,7 @@ const applyCursorColor = document.getElementById('applyCursorColor');
 const ibmToggleCheckbox = document.getElementById('ibmToggleCheckbox');
 const ibmLogo = document.querySelector('.ibm-logo');
 const screenSizeElement = document.getElementById('screenSize');
+const marginAlertToggle = document.getElementById('marginAlertToggle');
 
 // Measure actual character width
 function measureCharWidth() {
@@ -336,8 +338,8 @@ function updatePaperPosition() {
     
     lineNum.textContent = pos.line + 1;
     
-    // Show warning when near margin
-    if (pos.col >= CONFIG.maxCharsPerLine - 3) {
+    // Show warning when near margin (only if margin alert is enabled)
+    if (STATE.marginAlertEnabled && pos.col >= CONFIG.maxCharsPerLine - 3) {
         marginWarning.classList.add('show');
     } else {
         marginWarning.classList.remove('show');
@@ -468,11 +470,13 @@ textInput.addEventListener('keydown', (e) => {
         // Block input if it's a character key and we're at margin
         if (!isAllowedKey && !isControlKey && e.key.length === 1) {
             e.preventDefault();
-            // Trigger bell animation
-            marginWarning.classList.add('show');
-            setTimeout(() => {
-                marginWarning.classList.remove('show');
-            }, 500);
+            // Trigger bell animation (only if margin alert is enabled)
+            if (STATE.marginAlertEnabled) {
+                marginWarning.classList.add('show');
+                setTimeout(() => {
+                    marginWarning.classList.remove('show');
+                }, 500);
+            }
             return;
         }
     }
@@ -682,6 +686,18 @@ paperPreviews.forEach(preview => {
 // IBM image toggle
 ibmToggleCheckbox.addEventListener('change', (e) => {
     toggleIBMImage(e.target.checked);
+});
+
+// Margin alert toggle
+marginAlertToggle.addEventListener('change', (e) => {
+    STATE.marginAlertEnabled = e.target.checked;
+    // If disabled, immediately hide any visible margin warning
+    if (!STATE.marginAlertEnabled) {
+        marginWarning.classList.remove('show');
+    } else {
+        // If enabled, check if we should show it based on current position
+        updatePaperPosition();
+    }
 });
 
 // Focus on load

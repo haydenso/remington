@@ -234,7 +234,8 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     z-index: 1001;
     backdrop-filter: blur(10px);
-    max-width: 95vw;
+    max-width: 98vw;
+    min-width: 850px;
     transition: all 0.3s ease;
 }
 
@@ -689,6 +690,7 @@ body {
     
     .settings-menu {
         max-width: 98vw;
+        min-width: unset;
     }
     
     .settings-row {
