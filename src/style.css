@@ -132,25 +132,16 @@ body {
     background: rgba(255, 107, 53, 0.3);
 }
 
-/* Margin warning indicator */
+/* Margin warning indicator - Enter key button */
 .margin-warning {
     position: fixed;
-    top: calc(50% + 125px);
-    left: calc(50% + 320px);
+    top: calc(50% + 90px);
+    left: calc(50% + 360px);
     transform: translateY(-50%);
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: rgba(255, 107, 53, 0.9);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 20px;
+    margin-top: -43px; /* Half of enter key height (86px / 2) for proper centering */
     opacity: 0;
-    transition: opacity 0.3s;
+    transition: opacity 0.3s, transform 0.12s;
     pointer-events: none;
-    margin-top: -20px;
     z-index: 200;
 }
 
@@ -161,7 +152,62 @@ body {
 
 @keyframes pulse {
     0%, 100% { transform: translateY(-50%) scale(1); }
-    50% { transform: translateY(-50%) scale(1.1); }
+    50% { transform: translateY(-50%) scale(1.05); }
+}
+
+/* Keyboard key base styles */
+.keyboard-key {
+    width: 95px;
+    height: 86px;
+    background: #333;
+    color: white;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    border: none;
+    box-shadow: 
+        inset 0 2px 3px rgba(255,255,255,0.15),
+        0 3px 7px rgba(0,0,0,0.5);
+    position: relative;
+    overflow: hidden;
+}
+
+.enter-shape {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.enter-shape::before {
+    content: "enter";
+    position: absolute;
+    top: 6px;
+    left: 10px;
+    font-size: 11px;
+}
+
+.enter-shape::after {
+    content: "↩";
+    position: absolute;
+    bottom: 5px;
+    right: 8px;
+    font-size: 19px;
+    font-weight: bold;
+}
+
+/* ANSI L-shaped Enter key */
+.enter-l-right {
+    clip-path: polygon(
+        0% 0%,          /* top-left */
+        100% 0%,        /* top-right */
+        100% 100%,      /* bottom-right */
+        32% 100%,       /* bottom – start of left extension */
+        32% 38%,        /* inner corner height */
+        0% 38%          /* left cut */
+    );
 }
 
 /* Line indicator */
@@ -200,6 +246,11 @@ body {
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
     cursor: pointer;
     user-select: none;
+    transition: background 0.2s;
+}
+
+.settings-header:hover {
+    background: rgba(0, 0, 0, 0.02);
 }
 
 .settings-title {
@@ -240,6 +291,25 @@ body {
     display: none;
 }
 
+/* Settings sections for better organization */
+.settings-section {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.settings-section:last-of-type {
+    border-bottom: none;
+}
+
+.section-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #999;
+    padding: 12px 20px 8px 20px;
+    background: rgba(0, 0, 0, 0.02);
+}
+
 .settings-row {
     display: flex;
     flex-direction: row;
@@ -257,10 +327,11 @@ body {
     position: relative;
 }
 
-.setting-group:first-child {
+/* Toggle groups - horizontal layout with toggle on LEFT */
+.toggle-group {
     flex-direction: row;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
 }
 
 .toggle-label-group {
@@ -630,7 +701,25 @@ body {
     }
     
     .paper-container {
-        top: calc(50% + 100px - 11px - var(--margin) + 96px);
+        top: calc(50% + 100px - 11px - var(--margin) + 83px);
+        left: calc(50% - var(--margin) * 1.01);
+    }
+    
+    /* Scale Enter key slightly for tablets */
+    .keyboard-key {
+        width: 75px;
+        height: 68px;
+        left: 520px;
+    }
+    
+    .enter-shape::before {
+        font-size: 10px;
+        top: 5px;
+        left: 8px;
+    }
+    
+    .margin-warning {
+        margin-top: -34px; /* Half of scaled height (68px / 2) */
     }
 }
 
@@ -650,10 +739,27 @@ body {
     }
     
     .paper-container {
-        top: calc(50% + 80px - 11px - var(--margin) + 96px);
+        top: calc(50% + 80px - 11px - var(--margin) + 72px);
     }
     
     .margin-warning {
         left: calc(50% + 45vw);
+    }
+    
+    /* Scale down Enter key for mobile */
+    .keyboard-key {
+        width: 60px;
+        height: 54px;
+        left: 350px;
+    }
+    
+    .enter-shape::before {
+        font-size: 8px;
+        top: 4px;
+        left: 6px;
+    }
+    
+    .margin-warning {
+        margin-top: -27px; /* Half of scaled height (54px / 2) */
     }
 }

@@ -41,6 +41,7 @@ const bgColorPreviews = document.querySelectorAll('.color-preview');
 const textColorPreviews = document.querySelectorAll('.text-color-preview');
 const cursorColorPreviews = document.querySelectorAll('.cursor-color-preview');
 const minimizeBtn = document.getElementById('minimizeBtn');
+const settingsHeader = document.getElementById('settingsHeader');
 const settingsContent = document.getElementById('settingsContent');
 const settingsMenu = document.getElementById('settingsMenu');
 const customTextColorBtn = document.getElementById('customTextColorBtn');
@@ -628,8 +629,27 @@ applyCursorColor.addEventListener('click', () => {
     }
 });
 
-// Settings panel minimize/expand toggle
-minimizeBtn.addEventListener('click', () => {
+// Settings panel minimize/expand toggle - entire header is clickable
+settingsHeader.addEventListener('click', (e) => {
+    // Don't toggle if clicking the minimize button specifically (it handles its own click)
+    if (e.target === minimizeBtn || e.target.closest('.minimize-btn')) {
+        return;
+    }
+    
+    settingsContent.classList.toggle('collapsed');
+    settingsMenu.classList.toggle('minimized');
+    
+    // Toggle button text
+    if (settingsContent.classList.contains('collapsed')) {
+        minimizeBtn.textContent = '+';
+    } else {
+        minimizeBtn.textContent = '−';
+    }
+});
+
+// Minimize button also works independently
+minimizeBtn.addEventListener('click', (e) => {
+    e.stopPropagation(); // Prevent double-toggle from header click
     settingsContent.classList.toggle('collapsed');
     settingsMenu.classList.toggle('minimized');
     
