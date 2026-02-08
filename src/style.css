@@ -1,3 +1,11 @@
+:root {
+    --line-height: 25px;
+    --margin: 96px;
+    --text-color: #2a2a2a;
+    --cursor-color: #FF6B35;
+    --bg-color: #2387A8;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -6,9 +14,10 @@
 
 body {
     height: 100vh;
-    background: #2387A8;
+    background: var(--bg-color);
     overflow: hidden;
     font-family: 'Courier Prime', 'Courier New', monospace;
+    transition: background 0.3s ease;
 }
 
 /* Fixed cursor - lowered by 5 lines (125px) to align with text */
@@ -18,7 +27,7 @@ body {
     left: 50%;
     width: 2px;
     height: 22px;
-    background: #FF6B35;
+    background: var(--cursor-color);
     animation: blink 1.06s infinite;
     pointer-events: none;
     z-index: 1000;
@@ -34,8 +43,8 @@ body {
 /* Paper Container */
 .paper-container {
     position: fixed;
-    left: calc(50% - 96px);
-    top: calc(50% + 125px - 11px);
+    left: calc(50% - var(--margin));
+    top: calc(50% + 125px - 11px - var(--margin) + 96px);
     transform: translate(0, 0);
     transition: transform 0.08s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     will-change: transform;
@@ -67,9 +76,9 @@ body {
         repeating-linear-gradient(
             0deg,
             transparent,
-            transparent 24px,
-            rgba(0,0,0,0.03) 24px,
-            rgba(0,0,0,0.03) 25px
+            transparent calc(var(--line-height) - 1px),
+            rgba(0,0,0,0.03) calc(var(--line-height) - 1px),
+            rgba(0,0,0,0.03) var(--line-height)
         );
     pointer-events: none;
     z-index: 0;
@@ -78,14 +87,14 @@ body {
 /* Input textarea */
 .text-input {
     position: absolute;
-    top: 96px;
-    left: 96px;
-    width: calc(100% - 192px);
-    height: calc(100% - 192px);
+    top: var(--margin);
+    left: var(--margin);
+    width: calc(100% - var(--margin) * 2);
+    height: calc(100% - var(--margin) * 2);
     font-family: 'Courier Prime', 'Courier New', monospace;
     font-size: 18px;
     line-height: 25px;
-    color: #2a2a2a;
+    color: var(--text-color);
     background: transparent;
     border: none;
     outline: none;
@@ -153,27 +162,91 @@ body {
     opacity: 0.5;
 }
 
-/* Typewriter Mode Toggle */
-.mode-toggle {
+/* Settings Menu */
+.settings-menu {
     position: fixed;
     top: 20px;
     right: 20px;
     display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: 12px;
     background: rgba(255, 255, 255, 0.9);
-    padding: 12px 16px;
+    padding: 16px;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     z-index: 1001;
     backdrop-filter: blur(10px);
 }
 
-.toggle-label {
+.setting-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.toggle-label,
+.setting-label {
     font-size: 13px;
     color: #2a2a2a;
     font-weight: 500;
     user-select: none;
+}
+
+.font-size-select,
+.margin-select,
+.color-select {
+    font-size: 13px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background: white;
+    cursor: pointer;
+    font-family: 'Courier Prime', 'Courier New', monospace;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.font-size-select:hover,
+.margin-select:hover,
+.color-select:hover {
+    border-color: #FF6B35;
+}
+
+.font-size-select:focus,
+.margin-select:focus,
+.color-select:focus {
+    border-color: #FF6B35;
+    box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.1);
+}
+
+.export-buttons {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+}
+
+.export-btn {
+    flex: 1;
+    font-size: 12px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #FF6B35;
+    background: white;
+    color: #FF6B35;
+    cursor: pointer;
+    font-family: 'Courier Prime', 'Courier New', monospace;
+    font-weight: 500;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.export-btn:hover {
+    background: #FF6B35;
+    color: white;
+}
+
+.export-btn:active {
+    transform: scale(0.98);
 }
 
 .toggle-switch {

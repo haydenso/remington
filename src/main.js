@@ -1,12 +1,19 @@
 import './style.css'
 
+// Font configuration - single source of truth
+const FONT_CONFIG = {
+    size: 18,
+    lineHeight: 25
+};
+
 // Configuration
 const CONFIG = {
     charWidth: 10.8,
     lineHeight: 25,
     maxCharsPerLine: 55,
     leftMargin: 96,
-    topMargin: 96
+    topMargin: 96,
+    paperWidth: 800
 };
 
 // State
@@ -22,12 +29,19 @@ const marginWarning = document.getElementById('marginWarning');
 const lineNum = document.getElementById('lineNum');
 const typewriterModeCheckbox = document.getElementById('typewriterModeCheckbox');
 const toggleLabel = document.getElementById('toggleLabel');
+const fontSizeSelect = document.getElementById('fontSizeSelect');
+const marginSelect = document.getElementById('marginSelect');
+const textColorSelect = document.getElementById('textColorSelect');
+const cursorColorSelect = document.getElementById('cursorColorSelect');
+const bgColorSelect = document.getElementById('bgColorSelect');
+const downloadBtn = document.getElementById('downloadBtn');
+const copyBtn = document.getElementById('copyBtn');
 
 // Measure actual character width
 function measureCharWidth() {
     const span = document.createElement('span');
     span.style.fontFamily = 'Courier Prime, Courier New, monospace';
-    span.style.fontSize = '18px';
+    span.style.fontSize = FONT_CONFIG.size + 'px';
     span.style.visibility = 'hidden';
     span.style.position = 'absolute';
     span.textContent = 'X';
@@ -37,7 +51,133 @@ function measureCharWidth() {
     return width;
 }
 
-CONFIG.charWidth = measureCharWidth();
+// Recalculate all font-dependent configuration
+function recalculateConfig() {
+    // Measure character width based on current font size
+    CONFIG.charWidth = measureCharWidth();
+    
+    // Update line height (proportional to font size, typically 1.4x)
+    CONFIG.lineHeight = FONT_CONFIG.lineHeight;
+    
+    // Calculate max characters per line based on available paper width
+    const availableWidth = CONFIG.paperWidth - (CONFIG.leftMargin * 2);
+    CONFIG.maxCharsPerLine = Math.floor(availableWidth / CONFIG.charWidth) - 1;
+    
+    console.log('Font config updated:', {
+        fontSize: FONT_CONFIG.size,
+        charWidth: CONFIG.charWidth,
+        lineHeight: CONFIG.lineHeight,
+        maxCharsPerLine: CONFIG.maxCharsPerLine,
+        margins: CONFIG.leftMargin
+    });
+}
+
+// Update margins and all dependent systems
+function updateMargins(newMargin) {
+    const margin = parseInt(newMargin);
+    CONFIG.leftMargin = margin;
+    CONFIG.topMargin = margin;
+    
+    // Update CSS custom property for margins
+    document.documentElement.style.setProperty('--margin', margin + 'px');
+    
+    // Recalculate max characters per line based on new available width
+    recalculateConfig();
+    
+    // Update paper position to maintain alignment
+    updatePaperPosition();
+}
+
+// Update text color
+function updateTextColor(color) {
+    document.documentElement.style.setProperty('--text-color', color);
+}
+
+// Update cursor color
+function updateCursorColor(color) {
+    document.documentElement.style.setProperty('--cursor-color', color);
+    // Also update the box shadow to match cursor color
+    const cursor = document.querySelector('.cursor');
+    const rgb = hexToRgb(color);
+    if (rgb) {
+        cursor.style.boxShadow = `0 0 4px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.4)`;
+    }
+}
+
+// Update background color
+function updateBgColor(color) {
+    document.documentElement.style.setProperty('--bg-color', color);
+}
+
+// Helper function to convert hex to RGB
+function hexToRgb(hex) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
+
+// Download text as TXT file
+function downloadText() {
+    const text = textInput.value;
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'typewriter-text.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+// Copy text to clipboard
+async function copyText() {
+    const text = textInput.value;
+    try {
+        await navigator.clipboard.writeText(text);
+        // Visual feedback
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => {
+            copyBtn.textContent = 'Copy Text';
+        }, 2000);
+    } catch (err) {
+        console.error('Failed to copy text: ', err);
+        // Fallback for older browsers
+        textInput.select();
+        document.execCommand('copy');
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => {
+            copyBtn.textContent = 'Copy Text';
+        }, 2000);
+    }
+}
+
+// Update font size and all dependent systems
+function updateFontSize(newSize) {
+    FONT_CONFIG.size = parseInt(newSize);
+    
+    // Calculate proportional line height (1.4x font size, rounded to nearest pixel)
+    FONT_CONFIG.lineHeight = Math.round(FONT_CONFIG.size * 1.39);
+    
+    // Update CSS for textarea
+    textInput.style.fontSize = FONT_CONFIG.size + 'px';
+    textInput.style.lineHeight = FONT_CONFIG.lineHeight + 'px';
+    
+    // Update paper texture by modifying CSS custom property
+    document.documentElement.style.setProperty('--line-height', FONT_CONFIG.lineHeight + 'px');
+    
+    // Recalculate all dependent values
+    recalculateConfig();
+    
+    // Update paper position to maintain alignment
+    updatePaperPosition();
+}
+
+// Initialize configuration on startup
+recalculateConfig();
 
 // Get cursor position in text
 function getCursorPosition() {
@@ -232,6 +372,41 @@ typewriterModeCheckbox.addEventListener('change', (e) => {
     updateTypewriterMode(e.target.checked);
 });
 
+// Font size selector
+fontSizeSelect.addEventListener('change', (e) => {
+    updateFontSize(e.target.value);
+});
+
+// Margin selector
+marginSelect.addEventListener('change', (e) => {
+    updateMargins(e.target.value);
+});
+
+// Text color selector
+textColorSelect.addEventListener('change', (e) => {
+    updateTextColor(e.target.value);
+});
+
+// Cursor color selector
+cursorColorSelect.addEventListener('change', (e) => {
+    updateCursorColor(e.target.value);
+});
+
+// Background color selector
+bgColorSelect.addEventListener('change', (e) => {
+    updateBgColor(e.target.value);
+});
+
+// Download button
+downloadBtn.addEventListener('click', () => {
+    downloadText();
+});
+
+// Copy button
+copyBtn.addEventListener('click', () => {
+    copyText();
+});
+
 // Focus on load
 window.addEventListener('load', () => {
     textInput.focus();
@@ -240,7 +415,7 @@ window.addEventListener('load', () => {
 
 // Keep focus
 document.addEventListener('click', (e) => {
-    if (!e.target.closest('.text-input') && !e.target.closest('.mode-toggle')) {
+    if (!e.target.closest('.text-input') && !e.target.closest('.settings-menu')) {
         textInput.focus();
     }
 });
