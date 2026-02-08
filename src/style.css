@@ -520,15 +520,15 @@ body {
 /* IBM Logo at bottom of typewriter */
 .ibm-logo {
     position: fixed;
-    top: 62%;
-    left: 50%;
+    top: 180px;
+    left: 48.8vw;
     transform: translateX(-50%);
-    z-index: 2;
+    z-index: 100;
     pointer-events: none;
 }
 
 .ibm-logo img {
-    width: 2700px;
+    width: 100vw;
     height: auto;
     display: block;
 }
