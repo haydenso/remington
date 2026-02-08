@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>your typewriter!</title>
+    <link rel="icon" type="image/png" href="/icon.PNG">
     <script>
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     </script>
@@ -19,13 +20,79 @@
     <!-- Line counter -->
     <div class="line-indicator">Line <span id="lineNum">1</span></div>
     
-    <!-- Typewriter Mode Toggle -->
-    <div class="mode-toggle" id="modeToggle">
-        <label class="toggle-switch">
-            <input type="checkbox" id="typewriterModeCheckbox">
-            <span class="toggle-slider"></span>
-        </label>
-        <span class="toggle-label" id="toggleLabel">Typewriter Mode: OFF</span>
+    <!-- Settings Menu -->
+    <div class="settings-menu" id="settingsMenu">
+        <!-- Typewriter Mode Toggle -->
+        <div class="setting-item">
+            <label class="toggle-switch">
+                <input type="checkbox" id="typewriterModeCheckbox">
+                <span class="toggle-slider"></span>
+            </label>
+            <span class="toggle-label" id="toggleLabel">Typewriter Mode: OFF</span>
+        </div>
+        
+        <!-- Font Size Selector -->
+        <div class="setting-item">
+            <span class="setting-label">Font Size:</span>
+            <select id="fontSizeSelect" class="font-size-select">
+                <option value="11">Extra Small (11px)</option>
+                <option value="14">Small (14px)</option>
+                <option value="18" selected>Medium (18px)</option>
+                <option value="22">Large (22px)</option>
+            </select>
+        </div>
+        
+        <!-- Margin Selector -->
+        <div class="setting-item">
+            <span class="setting-label">Margins:</span>
+            <select id="marginSelect" class="margin-select">
+                <option value="48">Narrow</option>
+                <option value="96" selected>Normal</option>
+            </select>
+        </div>
+        
+        <!-- Background Color Selector -->
+        <div class="setting-item">
+            <span class="setting-label">Background:</span>
+            <select id="bgColorSelect" class="color-select">
+                <option value="#2387A8" selected>Blue</option>
+                <option value="#5C4A3A">Brown</option>
+                <option value="#4A5C4A">Green</option>
+                <option value="#6B4A6B">Purple</option>
+                <option value="#4A4A5C">Navy</option>
+                <option value="#3A3A3A">Dark Gray</option>
+            </select>
+        </div>
+        
+        <!-- Text Color Selector -->
+        <div class="setting-item">
+            <span class="setting-label">Text Color:</span>
+            <select id="textColorSelect" class="color-select">
+                <option value="#2a2a2a" selected>Black</option>
+                <option value="#0066cc">Blue</option>
+                <option value="#cc0000">Red</option>
+                <option value="#006600">Green</option>
+                <option value="#663399">Purple</option>
+            </select>
+        </div>
+        
+        <!-- Cursor Color Selector -->
+        <div class="setting-item">
+            <span class="setting-label">Cursor Color:</span>
+            <select id="cursorColorSelect" class="color-select">
+                <option value="#FF6B35" selected>Orange</option>
+                <option value="#2a2a2a">Black</option>
+                <option value="#0066cc">Blue</option>
+                <option value="#cc0000">Red</option>
+                <option value="#00cc00">Green</option>
+            </select>
+        </div>
+        
+        <!-- Export Buttons -->
+        <div class="setting-item export-buttons">
+            <button id="downloadBtn" class="export-btn">Download TXT</button>
+            <button id="copyBtn" class="export-btn">Copy Text</button>
+        </div>
     </div>
     
     <!-- Instructions -->
