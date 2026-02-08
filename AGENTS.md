@@ -9,8 +9,11 @@ This typewriter application uses a **fixed cursor with moving paper** paradigm. 
 ## Critical Concept: The Fixed Cursor
 
 **The cursor NEVER moves.** It's fixed at:
-- **Vertical position**: `calc(50% + 220px)` (style.css:17)
-- **Horizontal position**: `50%` (style.css:18)
+- **Vertical position**: `calc(50% + 220px)` (style.css:26)
+- **Horizontal position**: `50%` (style.css:27)
+- **Height**: Dynamically set via `--cursor-height` CSS variable (style.css:28)
+
+The cursor height is **dynamically calculated** to match the current font size, ensuring proper visual alignment regardless of text size.
 
 Instead of moving the cursor, we move the entire paper container using CSS transforms. This is the foundation of how everything works.
 
@@ -69,10 +72,53 @@ CONFIG.charWidth = measureCharWidth();  // Updates CONFIG
 ### Critical Dependencies
 
 When changing font settings, these MUST stay synchronized:
-1. **main.js:30** - `fontSize` in measureCharWidth()
-2. **style.css:86** - `font-size` in .text-input
-3. **style.css:87** - `line-height` in .text-input
-4. **main.js:6** - `CONFIG.lineHeight`
+1. **main.js:44** - `fontSize` in measureCharWidth()
+2. **style.css:107** - `font-size` in .text-input
+3. **style.css:108** - `line-height` in .text-input
+4. **main.js:12** - `CONFIG.lineHeight`
+5. **CSS variable** - `--cursor-height` (updated via updateCursorHeight())
+
+---
+
+## 2A. Cursor Height Sizing (main.js:165-171 & style.css:28)
+
+### Dynamic Cursor Sizing
+
+**CRITICAL**: The cursor height MUST scale proportionally with font size to maintain proper visual alignment.
+
+```javascript
+function updateCursorHeight() {
+    // Cursor height should be approximately 1.2x the font size for visual balance
+    const cursorHeight = Math.round(FONT_CONFIG.size * 1.2);
+    document.documentElement.style.setProperty('--cursor-height', cursorHeight + 'px');
+}
+```
+
+### Why This Matters
+
+- **Small fonts (11px)**: Cursor height = 13px (11 × 1.2)
+- **Medium fonts (18px)**: Cursor height = 22px (18 × 1.2) 
+- **Large fonts (22px)**: Cursor height = 26px (22 × 1.2)
+
+Without dynamic sizing, the cursor would appear too large for small fonts or too small for large fonts, breaking the visual illusion of typing on paper.
+
+### When This Is Called
+
+1. **On page load**: `recalculateConfig()` and `updateCursorHeight()` (main.js:242-243)
+2. **When font size changes**: Inside `updateFontSize()` (main.js:233)
+
+### CSS Integration
+
+The cursor uses a CSS variable for height:
+
+```css
+.cursor {
+    height: var(--cursor-height, 22px);  /* Fallback to 22px if not set */
+    margin-top: calc(var(--cursor-height, 22px) / -2);  /* Center vertically */
+}
+```
+
+The margin-top uses half the cursor height to keep it centered on the typing line.
 
 ---
 

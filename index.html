@@ -22,82 +22,162 @@
     
     <!-- Settings Menu -->
     <div class="settings-menu" id="settingsMenu">
-        <!-- Typewriter Mode Toggle -->
-        <div class="setting-item">
-            <label class="toggle-switch">
-                <input type="checkbox" id="typewriterModeCheckbox">
-                <span class="toggle-slider"></span>
-            </label>
-            <span class="toggle-label" id="toggleLabel">Typewriter Mode: OFF</span>
+        <div class="settings-header">
+            <span class="settings-title">Settings</span>
+            <button class="minimize-btn" id="minimizeBtn">−</button>
         </div>
         
-        <!-- Font Size Selector -->
-        <div class="setting-item">
-            <span class="setting-label">Font Size:</span>
-            <select id="fontSizeSelect" class="font-size-select">
-                <option value="11">Extra Small (11px)</option>
-                <option value="14">Small (14px)</option>
-                <option value="18" selected>Medium (18px)</option>
-                <option value="22">Large (22px)</option>
-            </select>
+        <div class="settings-content" id="settingsContent">
+            <div class="settings-row">
+                <!-- Typewriter Mode Toggle -->
+                <div class="setting-group">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="typewriterModeCheckbox">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <div class="toggle-label-group">
+                        <span class="toggle-label" id="toggleLabel">Typewriter</span>
+                        <span class="toggle-description">no deletion and jumping back</span>
+                    </div>
+                </div>
+                
+                <!-- Font Size Selector -->
+                <div class="setting-group">
+                    <span class="setting-label">Font Size</span>
+                    <div class="font-size-options">
+                        <div class="font-size-preview" data-size="11" title="Extra Small (11px)">
+                            <div class="font-size-circle">XS</div>
+                        </div>
+                        <div class="font-size-preview" data-size="14" title="Small (14px)">
+                            <div class="font-size-circle">S</div>
+                        </div>
+                        <div class="font-size-preview active" data-size="18" title="Medium (18px)">
+                            <div class="font-size-circle">M</div>
+                        </div>
+                        <div class="font-size-preview" data-size="22" title="Large (22px)">
+                            <div class="font-size-circle">L</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Margin Selector -->
+                <div class="setting-group">
+                    <span class="setting-label">Margins</span>
+                    <div class="margin-options">
+                        <div class="margin-preview" data-margin="48" title="Narrow">
+                            <div class="margin-circle">N</div>
+                        </div>
+                        <div class="margin-preview active" data-margin="96" title="Normal">
+                            <div class="margin-circle">W</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Background Color Selector -->
+                <div class="setting-group">
+                    <span class="setting-label">Background</span>
+                    <div class="color-options">
+                        <div class="color-preview active" data-color="#2387A8" title="Blue">
+                            <div class="color-circle" style="background-color: #2387A8;"></div>
+                        </div>
+                        <div class="color-preview" data-color="#5C4A3A" title="Brown">
+                            <div class="color-circle" style="background-color: #5C4A3A;"></div>
+                        </div>
+                        <div class="color-preview" data-color="#4A5C4A" title="Green">
+                            <div class="color-circle" style="background-color: #4A5C4A;"></div>
+                        </div>
+                        <div class="color-preview" data-color="#6B4A6B" title="Purple">
+                            <div class="color-circle" style="background-color: #6B4A6B;"></div>
+                        </div>
+                        <div class="color-preview" data-color="#4A4A5C" title="Navy">
+                            <div class="color-circle" style="background-color: #4A4A5C;"></div>
+                        </div>
+                        <div class="color-preview" data-color="#3A3A3A" title="Dark Gray">
+                            <div class="color-circle" style="background-color: #3A3A3A;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Text Color Selector -->
+                <div class="setting-group">
+                    <span class="setting-label">Text Color</span>
+                    <div class="color-options">
+                        <div class="text-color-preview active" data-color="#2a2a2a" title="Black">
+                            <div class="color-circle" style="background-color: #2a2a2a;"></div>
+                        </div>
+                        <div class="text-color-preview" data-color="#0066cc" title="Blue">
+                            <div class="color-circle" style="background-color: #0066cc;"></div>
+                        </div>
+                        <div class="text-color-preview" data-color="#cc0000" title="Red">
+                            <div class="color-circle" style="background-color: #cc0000;"></div>
+                        </div>
+                        <div class="text-color-preview custom-color-btn" id="customTextColorBtn" title="Custom Color">
+                            <div class="color-circle custom-color-circle">+</div>
+                        </div>
+                    </div>
+                    <div class="custom-color-input" id="customTextColorInput" style="display: none;">
+                        <input type="text" placeholder="#000000" maxlength="7" id="textColorHexInput">
+                        <button id="applyTextColor">Apply</button>
+                    </div>
+                </div>
+                
+                <!-- Cursor Color Selector -->
+                <div class="setting-group">
+                    <span class="setting-label">Cursor Color</span>
+                    <div class="color-options">
+                        <div class="cursor-color-preview active" data-color="#FF6B35" title="Orange">
+                            <div class="color-circle" style="background-color: #FF6B35;"></div>
+                        </div>
+                        <div class="cursor-color-preview" data-color="#2a2a2a" title="Black">
+                            <div class="color-circle" style="background-color: #2a2a2a;"></div>
+                        </div>
+                        <div class="cursor-color-preview" data-color="#0066cc" title="Blue">
+                            <div class="color-circle" style="background-color: #0066cc;"></div>
+                        </div>
+                        <div class="cursor-color-preview custom-color-btn" id="customCursorColorBtn" title="Custom Color">
+                            <div class="color-circle custom-color-circle">+</div>
+                        </div>
+                    </div>
+                    <div class="custom-color-input" id="customCursorColorInput" style="display: none;">
+                        <input type="text" placeholder="#000000" maxlength="7" id="cursorColorHexInput">
+                        <button id="applyCursorColor">Apply</button>
+                    </div>
+                </div>
+                
+                <!-- Paper Texture Selector -->
+                <div class="setting-group">
+                    <span class="setting-label">Paper Style</span>
+                    <div class="paper-options">
+                        <div class="paper-preview active" data-paper="default" title="Default Paper">
+                            <div class="paper-preview-circle default-paper"></div>
+                        </div>
+                        <div class="paper-preview" data-paper="paper1" title="Paper 1">
+                            <div class="paper-preview-circle" style="background-image: url('/paper1.jpg'); background-size: cover;"></div>
+                        </div>
+                        <div class="paper-preview" data-paper="paper2" title="Paper 2">
+                            <div class="paper-preview-circle" style="background-image: url('/paper2.jpg'); background-size: cover;"></div>
+                        </div>
+                        <div class="paper-preview" data-paper="paper3" title="Paper 3">
+                            <div class="paper-preview-circle" style="background-image: url('/paper3.jpg'); background-size: cover;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Export Buttons -->
+                <div class="setting-group">
+                    <span class="setting-label">Export</span>
+                    <div class="export-buttons">
+                        <button id="downloadBtn" class="export-btn">⬇ Download</button>
+                        <button id="copyBtn" class="export-btn">📋 Copy</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Instructions -->
+            <div class="instructions-panel">
+                Start typing... | Press Enter/Return for new line | Backspace to delete
+            </div>
         </div>
-        
-        <!-- Margin Selector -->
-        <div class="setting-item">
-            <span class="setting-label">Margins:</span>
-            <select id="marginSelect" class="margin-select">
-                <option value="48">Narrow</option>
-                <option value="96" selected>Normal</option>
-            </select>
-        </div>
-        
-        <!-- Background Color Selector -->
-        <div class="setting-item">
-            <span class="setting-label">Background:</span>
-            <select id="bgColorSelect" class="color-select">
-                <option value="#2387A8" selected>Blue</option>
-                <option value="#5C4A3A">Brown</option>
-                <option value="#4A5C4A">Green</option>
-                <option value="#6B4A6B">Purple</option>
-                <option value="#4A4A5C">Navy</option>
-                <option value="#3A3A3A">Dark Gray</option>
-            </select>
-        </div>
-        
-        <!-- Text Color Selector -->
-        <div class="setting-item">
-            <span class="setting-label">Text Color:</span>
-            <select id="textColorSelect" class="color-select">
-                <option value="#2a2a2a" selected>Black</option>
-                <option value="#0066cc">Blue</option>
-                <option value="#cc0000">Red</option>
-                <option value="#006600">Green</option>
-                <option value="#663399">Purple</option>
-            </select>
-        </div>
-        
-        <!-- Cursor Color Selector -->
-        <div class="setting-item">
-            <span class="setting-label">Cursor Color:</span>
-            <select id="cursorColorSelect" class="color-select">
-                <option value="#FF6B35" selected>Orange</option>
-                <option value="#2a2a2a">Black</option>
-                <option value="#0066cc">Blue</option>
-                <option value="#cc0000">Red</option>
-                <option value="#00cc00">Green</option>
-            </select>
-        </div>
-        
-        <!-- Export Buttons -->
-        <div class="setting-item export-buttons">
-            <button id="downloadBtn" class="export-btn">Download TXT</button>
-            <button id="copyBtn" class="export-btn">Copy Text</button>
-        </div>
-    </div>
-    
-    <!-- Instructions -->
-    <div class="instructions">
-        Start typing... | Press Enter/Return for new line | Backspace to delete
     </div>
 
     <!-- Paper container -->

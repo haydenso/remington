@@ -24,18 +24,31 @@ const STATE = {
 
 // Elements
 const paperContainer = document.getElementById('paperContainer');
+const paper = document.querySelector('.paper');
 const textInput = document.getElementById('textInput');
 const marginWarning = document.getElementById('marginWarning');
 const lineNum = document.getElementById('lineNum');
 const typewriterModeCheckbox = document.getElementById('typewriterModeCheckbox');
 const toggleLabel = document.getElementById('toggleLabel');
-const fontSizeSelect = document.getElementById('fontSizeSelect');
-const marginSelect = document.getElementById('marginSelect');
-const textColorSelect = document.getElementById('textColorSelect');
-const cursorColorSelect = document.getElementById('cursorColorSelect');
-const bgColorSelect = document.getElementById('bgColorSelect');
 const downloadBtn = document.getElementById('downloadBtn');
 const copyBtn = document.getElementById('copyBtn');
+const paperPreviews = document.querySelectorAll('.paper-preview');
+const fontSizePreviews = document.querySelectorAll('.font-size-preview');
+const marginPreviews = document.querySelectorAll('.margin-preview');
+const bgColorPreviews = document.querySelectorAll('.color-preview');
+const textColorPreviews = document.querySelectorAll('.text-color-preview');
+const cursorColorPreviews = document.querySelectorAll('.cursor-color-preview');
+const minimizeBtn = document.getElementById('minimizeBtn');
+const settingsContent = document.getElementById('settingsContent');
+const settingsMenu = document.getElementById('settingsMenu');
+const customTextColorBtn = document.getElementById('customTextColorBtn');
+const customTextColorInput = document.getElementById('customTextColorInput');
+const textColorHexInput = document.getElementById('textColorHexInput');
+const applyTextColor = document.getElementById('applyTextColor');
+const customCursorColorBtn = document.getElementById('customCursorColorBtn');
+const customCursorColorInput = document.getElementById('customCursorColorInput');
+const cursorColorHexInput = document.getElementById('cursorColorHexInput');
+const applyCursorColor = document.getElementById('applyCursorColor');
 
 // Measure actual character width
 function measureCharWidth() {
@@ -109,6 +122,45 @@ function updateBgColor(color) {
     document.documentElement.style.setProperty('--bg-color', color);
 }
 
+// Update paper texture
+function updatePaperTexture(paperType) {
+    // Remove all previous paper classes
+    paper.classList.remove('texture-paper');
+    
+    if (paperType === 'default') {
+        // Use default CSS gradient lines
+        document.documentElement.style.removeProperty('--paper-texture');
+    } else {
+        // Use image texture (paper1, paper2, paper3)
+        paper.classList.add('texture-paper');
+        document.documentElement.style.setProperty('--paper-texture', `url('/${paperType}.jpg')`);
+    }
+    
+    // Update active state on previews
+    paperPreviews.forEach(preview => {
+        if (preview.dataset.paper === paperType) {
+            preview.classList.add('active');
+        } else {
+            preview.classList.remove('active');
+        }
+    });
+}
+
+// Dynamically expand paper height based on content
+function updatePaperHeight() {
+    const pos = getCursorPosition();
+    
+    // Calculate required height based on total lines
+    // Add extra space (2x viewport height) to ensure smooth scrolling
+    const requiredHeight = (pos.totalLines * CONFIG.lineHeight) + (CONFIG.topMargin * 2) + (window.innerHeight * 2);
+    
+    // Always keep paper large enough
+    const currentHeight = paper.offsetHeight;
+    if (requiredHeight > currentHeight) {
+        paper.style.minHeight = requiredHeight + 'px';
+    }
+}
+
 // Helper function to convert hex to RGB
 function hexToRgb(hex) {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -117,6 +169,21 @@ function hexToRgb(hex) {
         g: parseInt(result[2], 16),
         b: parseInt(result[3], 16)
     } : null;
+}
+
+// Update cursor height to match font size
+function updateCursorHeight() {
+    // Cursor height should be approximately 1.3x the font size for visual balance
+    const cursorHeight = Math.round(FONT_CONFIG.size * 1.3);
+    document.documentElement.style.setProperty('--cursor-height', cursorHeight + 'px');
+    
+    // Calculate vertical offset to keep cursor aligned with text center
+    // As font size decreases, we need to adjust the cursor position slightly up
+    // Base offset at 18px (default) = 0
+    // For smaller fonts, move cursor up; for larger fonts, move down
+    const baseSize = 18;
+    const offsetAdjustment = (FONT_CONFIG.size - baseSize) * 0.5;
+    document.documentElement.style.setProperty('--cursor-offset', offsetAdjustment + 'px');
 }
 
 // Download text as TXT file
@@ -139,18 +206,18 @@ async function copyText() {
     try {
         await navigator.clipboard.writeText(text);
         // Visual feedback
-        copyBtn.textContent = 'Copied!';
+        copyBtn.textContent = '✓ Copied!';
         setTimeout(() => {
-            copyBtn.textContent = 'Copy Text';
+            copyBtn.textContent = '📋 Copy';
         }, 2000);
     } catch (err) {
         console.error('Failed to copy text: ', err);
         // Fallback for older browsers
         textInput.select();
         document.execCommand('copy');
-        copyBtn.textContent = 'Copied!';
+        copyBtn.textContent = '✓ Copied!';
         setTimeout(() => {
-            copyBtn.textContent = 'Copy Text';
+            copyBtn.textContent = '📋 Copy';
         }, 2000);
     }
 }
@@ -169,6 +236,9 @@ function updateFontSize(newSize) {
     // Update paper texture by modifying CSS custom property
     document.documentElement.style.setProperty('--line-height', FONT_CONFIG.lineHeight + 'px');
     
+    // Update cursor height to match font size
+    updateCursorHeight();
+    
     // Recalculate all dependent values
     recalculateConfig();
     
@@ -178,6 +248,7 @@ function updateFontSize(newSize) {
 
 // Initialize configuration on startup
 recalculateConfig();
+updateCursorHeight();
 
 // Get cursor position in text
 function getCursorPosition() {
@@ -212,6 +283,9 @@ function updatePaperPosition() {
     } else {
         marginWarning.classList.remove('show');
     }
+    
+    // Dynamically expand paper height for infinite scroll
+    updatePaperHeight();
 }
 
 // Check if at margin
@@ -372,29 +446,141 @@ typewriterModeCheckbox.addEventListener('change', (e) => {
     updateTypewriterMode(e.target.checked);
 });
 
-// Font size selector
-fontSizeSelect.addEventListener('change', (e) => {
-    updateFontSize(e.target.value);
+// Font size selector - circular buttons
+fontSizePreviews.forEach(preview => {
+    preview.addEventListener('click', () => {
+        const size = preview.dataset.size;
+        updateFontSize(size);
+        
+        // Update active state
+        fontSizePreviews.forEach(p => p.classList.remove('active'));
+        preview.classList.add('active');
+    });
 });
 
-// Margin selector
-marginSelect.addEventListener('change', (e) => {
-    updateMargins(e.target.value);
+// Margin selector - circular buttons
+marginPreviews.forEach(preview => {
+    preview.addEventListener('click', () => {
+        const margin = preview.dataset.margin;
+        updateMargins(margin);
+        
+        // Update active state
+        marginPreviews.forEach(p => p.classList.remove('active'));
+        preview.classList.add('active');
+    });
 });
 
-// Text color selector
-textColorSelect.addEventListener('change', (e) => {
-    updateTextColor(e.target.value);
+// Background color selector - circular buttons
+bgColorPreviews.forEach(preview => {
+    preview.addEventListener('click', () => {
+        const color = preview.dataset.color;
+        updateBgColor(color);
+        
+        // Update active state
+        bgColorPreviews.forEach(p => p.classList.remove('active'));
+        preview.classList.add('active');
+    });
 });
 
-// Cursor color selector
-cursorColorSelect.addEventListener('change', (e) => {
-    updateCursorColor(e.target.value);
+// Text color selector - circular buttons
+textColorPreviews.forEach(preview => {
+    preview.addEventListener('click', () => {
+        // Check if it's the custom color button
+        if (preview.classList.contains('custom-color-btn')) {
+            // Toggle custom color input
+            const isVisible = customTextColorInput.style.display === 'flex';
+            customTextColorInput.style.display = isVisible ? 'none' : 'flex';
+            if (!isVisible) {
+                customCursorColorInput.style.display = 'none'; // Close other custom input
+            }
+            return;
+        }
+        
+        const color = preview.dataset.color;
+        updateTextColor(color);
+        
+        // Update active state
+        textColorPreviews.forEach(p => p.classList.remove('active'));
+        preview.classList.add('active');
+        
+        // Hide custom color input
+        customTextColorInput.style.display = 'none';
+    });
 });
 
-// Background color selector
-bgColorSelect.addEventListener('change', (e) => {
-    updateBgColor(e.target.value);
+// Cursor color selector - circular buttons
+cursorColorPreviews.forEach(preview => {
+    preview.addEventListener('click', () => {
+        // Check if it's the custom color button
+        if (preview.classList.contains('custom-color-btn')) {
+            // Toggle custom color input
+            const isVisible = customCursorColorInput.style.display === 'flex';
+            customCursorColorInput.style.display = isVisible ? 'none' : 'flex';
+            if (!isVisible) {
+                customTextColorInput.style.display = 'none'; // Close other custom input
+            }
+            return;
+        }
+        
+        const color = preview.dataset.color;
+        updateCursorColor(color);
+        
+        // Update active state
+        cursorColorPreviews.forEach(p => p.classList.remove('active'));
+        preview.classList.add('active');
+        
+        // Hide custom color input
+        customCursorColorInput.style.display = 'none';
+    });
+});
+
+// Custom text color handler
+applyTextColor.addEventListener('click', () => {
+    const hexValue = textColorHexInput.value.trim();
+    if (/^#[0-9A-F]{6}$/i.test(hexValue)) {
+        updateTextColor(hexValue);
+        customTextColorInput.style.display = 'none';
+        
+        // Mark custom button as active
+        textColorPreviews.forEach(p => p.classList.remove('active'));
+        customTextColorBtn.classList.add('active');
+        
+        // Update custom button preview background but keep + symbol
+        const customCircle = customTextColorBtn.querySelector('.color-circle');
+        customCircle.style.background = hexValue;
+        customCircle.textContent = '+';
+    }
+});
+
+// Custom cursor color handler
+applyCursorColor.addEventListener('click', () => {
+    const hexValue = cursorColorHexInput.value.trim();
+    if (/^#[0-9A-F]{6}$/i.test(hexValue)) {
+        updateCursorColor(hexValue);
+        customCursorColorInput.style.display = 'none';
+        
+        // Mark custom button as active
+        cursorColorPreviews.forEach(p => p.classList.remove('active'));
+        customCursorColorBtn.classList.add('active');
+        
+        // Update custom button preview background but keep + symbol
+        const customCircle = customCursorColorBtn.querySelector('.color-circle');
+        customCircle.style.background = hexValue;
+        customCircle.textContent = '+';
+    }
+});
+
+// Settings panel minimize/expand toggle
+minimizeBtn.addEventListener('click', () => {
+    settingsContent.classList.toggle('collapsed');
+    settingsMenu.classList.toggle('minimized');
+    
+    // Toggle button text
+    if (settingsContent.classList.contains('collapsed')) {
+        minimizeBtn.textContent = '+';
+    } else {
+        minimizeBtn.textContent = '−';
+    }
 });
 
 // Download button
@@ -405,6 +591,14 @@ downloadBtn.addEventListener('click', () => {
 // Copy button
 copyBtn.addEventListener('click', () => {
     copyText();
+});
+
+// Paper texture selector
+paperPreviews.forEach(preview => {
+    preview.addEventListener('click', () => {
+        const paperType = preview.dataset.paper;
+        updatePaperTexture(paperType);
+    });
 });
 
 // Focus on load

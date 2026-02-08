@@ -3,6 +3,8 @@
     --margin: 96px;
     --text-color: #2a2a2a;
     --cursor-color: #FF6B35;
+    --cursor-height: 22px;
+    --cursor-offset: 0px;
     --bg-color: #2387A8;
 }
 
@@ -20,19 +22,19 @@ body {
     transition: background 0.3s ease;
 }
 
-/* Fixed cursor - lowered by 5 lines (125px) to align with text */
+/* Fixed cursor - height matches font size dynamically */
 .cursor {
     position: fixed;
-    top: calc(50% + 220px);
+    top: calc(50% + 220px + var(--cursor-offset));
     left: 50%;
     width: 2px;
-    height: 22px;
+    height: var(--cursor-height);
     background: var(--cursor-color);
     animation: blink 1.06s infinite;
     pointer-events: none;
     z-index: 1000;
     box-shadow: 0 0 4px rgba(255, 107, 53, 0.4);
-    margin-top: -11px;
+    margin-top: calc(var(--cursor-height) / -2);
 }
 
 @keyframes blink {
@@ -51,10 +53,11 @@ body {
     z-index: 1;
 }
 
-/* The actual paper sheet */
+/* The actual paper sheet - INFINITE HEIGHT */
 .paper {
     width: 800px;
-    height: 1000px;
+    min-height: 200vh;
+    height: auto;
     background: #FEFEFE;
     box-shadow: 
         0 4px 6px rgba(0,0,0,0.05),
@@ -64,7 +67,7 @@ body {
     overflow: visible;
 }
 
-/* Paper texture overlay */
+/* Paper texture overlay - default lined paper */
 .paper::before {
     content: '';
     position: absolute;
@@ -84,13 +87,22 @@ body {
     z-index: 0;
 }
 
-/* Input textarea */
+/* Paper texture for image-based papers - seamless repeating */
+.paper.texture-paper::before {
+    background-image: var(--paper-texture);
+    background-repeat: repeat;
+    background-size: 800px auto;
+    background-position: 0 0;
+}
+
+/* Input textarea - INFINITE HEIGHT */
 .text-input {
     position: absolute;
     top: var(--margin);
     left: var(--margin);
     width: calc(100% - var(--margin) * 2);
-    height: calc(100% - var(--margin) * 2);
+    height: 100%;
+    max-height: none;
     font-family: 'Courier Prime', 'Courier New', monospace;
     font-size: 18px;
     line-height: 25px;
@@ -100,8 +112,9 @@ body {
     outline: none;
     resize: none;
     padding: 0;
+    padding-bottom: 50vh;
     margin: 0;
-    overflow: hidden;
+    overflow: visible;
     white-space: pre;
     word-wrap: normal;
     overflow-wrap: normal;
@@ -162,80 +175,281 @@ body {
     opacity: 0.5;
 }
 
-/* Settings Menu */
+/* Settings Menu - Horizontal Layout */
 .settings-menu {
     position: fixed;
-    top: 20px;
-    right: 20px;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 16px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.96);
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     z-index: 1001;
     backdrop-filter: blur(10px);
+    max-width: 95vw;
+    transition: all 0.3s ease;
 }
 
-.setting-item {
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    user-select: none;
+}
+
+.settings-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #2a2a2a;
+}
+
+.minimize-btn {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: #666;
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.minimize-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: #FF6B35;
+}
+
+.settings-content {
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.settings-content.collapsed {
+    display: none;
+}
+
+.settings-row {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 12px 20px;
+    flex-wrap: wrap;
+}
+
+.setting-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-start;
+    position: relative;
+}
+
+.setting-group:first-child {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.toggle-label-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.toggle-description {
+    font-size: 9px;
+    color: #999;
+    font-weight: 400;
+    font-style: italic;
+    user-select: none;
 }
 
 .toggle-label,
 .setting-label {
-    font-size: 13px;
-    color: #2a2a2a;
-    font-weight: 500;
+    font-size: 11px;
+    color: #666;
+    font-weight: 600;
     user-select: none;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.font-size-select,
-.margin-select,
-.color-select {
-    font-size: 13px;
-    padding: 6px 10px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
+/* Circular option containers */
+.font-size-options,
+.margin-options,
+.color-options,
+.paper-options {
+    display: flex;
+    gap: 6px;
+    flex-wrap: nowrap;
+}
+
+/* Custom color input styling */
+.custom-color-input {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 8px;
     background: white;
+    padding: 8px;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    gap: 6px;
+    z-index: 1002;
+}
+
+.custom-color-input input {
+    width: 100px;
+    padding: 6px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: 'Courier Prime', monospace;
+    font-size: 12px;
+}
+
+.custom-color-input button {
+    padding: 6px 12px;
+    background: #FF6B35;
+    color: white;
+    border: none;
+    border-radius: 4px;
     cursor: pointer;
-    font-family: 'Courier Prime', 'Courier New', monospace;
-    outline: none;
-    transition: border-color 0.2s;
+    font-size: 11px;
+    font-weight: 600;
 }
 
-.font-size-select:hover,
-.margin-select:hover,
-.color-select:hover {
-    border-color: #FF6B35;
+.custom-color-input button:hover {
+    background: #ff5520;
 }
 
-.font-size-select:focus,
-.margin-select:focus,
-.color-select:focus {
+/* Font size previews */
+.font-size-preview,
+.margin-preview {
+    cursor: pointer;
+    padding: 2px;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.font-size-preview:hover,
+.margin-preview:hover {
+    border-color: rgba(255, 107, 53, 0.3);
+    transform: scale(1.05);
+}
+
+.font-size-preview.active,
+.margin-preview.active {
     border-color: #FF6B35;
     box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.1);
 }
 
+.font-size-circle,
+.margin-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: #2a2a2a;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Color previews */
+.color-preview,
+.text-color-preview,
+.cursor-color-preview {
+    cursor: pointer;
+    padding: 2px;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.color-preview:hover,
+.text-color-preview:hover,
+.cursor-color-preview:hover {
+    border-color: rgba(255, 107, 53, 0.3);
+    transform: scale(1.05);
+}
+
+.color-preview.active,
+.text-color-preview.active,
+.cursor-color-preview.active {
+    border-color: #FF6B35;
+    box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.1);
+}
+
+.color-circle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    box-shadow: 
+        0 2px 4px rgba(0, 0, 0, 0.15),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.custom-color-circle {
+    font-size: 18px;
+    font-weight: 300;
+    color: white;
+    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+}
+
+/* Keep + symbol white when custom color is applied */
+.custom-color-btn.active .custom-color-circle {
+    color: white;
+}
+
+/* Instructions panel inside settings */
+.instructions-panel {
+    font-size: 10px;
+    color: #999;
+    text-align: center;
+    padding: 8px 20px;
+    background: rgba(0, 0, 0, 0.02);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    line-height: 1.5;
+}
+
 .export-buttons {
     display: flex;
-    gap: 8px;
-    width: 100%;
+    gap: 6px;
+    flex-direction: row;
 }
 
 .export-btn {
-    flex: 1;
-    font-size: 12px;
-    padding: 8px 12px;
+    padding: 6px 12px;
+    font-size: 11px;
     border-radius: 4px;
     border: 1px solid #FF6B35;
     background: white;
     color: #FF6B35;
     cursor: pointer;
     font-family: 'Courier Prime', 'Courier New', monospace;
-    font-weight: 500;
+    font-weight: 600;
     outline: none;
     transition: all 0.2s;
 }
@@ -246,14 +460,14 @@ body {
 }
 
 .export-btn:active {
-    transform: scale(0.98);
+    transform: scale(0.95);
 }
 
 .toggle-switch {
     position: relative;
     display: inline-block;
-    width: 48px;
-    height: 24px;
+    width: 44px;
+    height: 22px;
 }
 
 .toggle-switch input {
@@ -271,14 +485,14 @@ body {
     bottom: 0;
     background-color: #ccc;
     transition: 0.3s;
-    border-radius: 24px;
+    border-radius: 22px;
 }
 
 .toggle-slider:before {
     position: absolute;
     content: "";
-    height: 18px;
-    width: 18px;
+    height: 16px;
+    width: 16px;
     left: 3px;
     bottom: 3px;
     background-color: white;
@@ -291,23 +505,11 @@ body {
 }
 
 .toggle-switch input:checked + .toggle-slider:before {
-    transform: translateX(24px);
+    transform: translateX(22px);
 }
 
 .toggle-slider:hover {
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
-}
-
-/* Instructions */
-.instructions {
-    position: fixed;
-    bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: #5C4A3A;
-    font-size: 14px;
-    opacity: 0.6;
-    text-align: center;
 }
 
 /* Carriage return animation */
@@ -329,4 +531,47 @@ body {
     width: 2700px;
     height: auto;
     display: block;
+}
+
+/* Paper Selector Styles */
+.paper-preview {
+    cursor: pointer;
+    padding: 2px;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.paper-preview:hover {
+    border-color: rgba(255, 107, 53, 0.3);
+    transform: scale(1.05);
+}
+
+.paper-preview.active {
+    border-color: #FF6B35;
+    box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.1);
+}
+
+.paper-preview-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #FEFEFE;
+    box-shadow: 
+        0 2px 4px rgba(0,0,0,0.1),
+        inset 0 0 20px rgba(0,0,0,0.02);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.paper-preview-circle.default-paper {
+    background-image: 
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 3px,
+            rgba(0,0,0,0.08) 3px,
+            rgba(0,0,0,0.08) 4px
+        );
 }
